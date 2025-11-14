@@ -1,0 +1,54 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma-test"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL_TEST")
+}
+
+model User {
+  id       String @id @default(uuid())
+  name     String
+  email    String @unique
+  password String
+
+  // Perfil
+  username  String? @unique
+  avatarUrl String?
+  phone     String?
+
+  // Segurança e status
+  isActive     Boolean   @default(true)
+  role         UserRole  @default(USER)
+  lastLogin    DateTime?
+  failedLogins Int       @default(0)
+
+  // Verificação / recuperação
+  emailVerified        DateTime?
+  verificationToken    String?   @unique
+  resetPasswordToken   String?   @unique
+  resetPasswordExpires DateTime?
+
+  // Auditoria
+  lastIp       String?
+  registeredIp String?
+
+  // Soft delete
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum UserRole {
+  ADMIN
+  USER
+}
