@@ -4,15 +4,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as CryptoJS from 'crypto-js';
 import { responseMessageAndData } from 'src/services/http-response.util';
+import { UserInterface } from '../../services/interfaces/user.interface';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
     createUserDto.password = CryptoJS.MD5(createUserDto.password).toString();
+    createUserDto.verificationToken = CryptoJS.MD5(createUserDto.email).toString();
     createUserDto.isActive = true;
 
-    const hasUser = await this.findOneByCpf(createUserDto.cpf);
+    const hasUser = await this.findOneByCpfOrUsername(createUserDto.cpf);
 
     if (hasUser) {
       return { message: 'Usuário já cadastrado !', data: hasUser };
@@ -26,7 +28,7 @@ export class UsersService {
       update: createUserDto,
     });
 
-    const data = responseMessageAndData(
+    const data = responseMessageAndData<UserInterface, string>(
       response,
       'Usuário cadastrado com sucesso!',
       'Usuário não cadastrado!',
@@ -38,7 +40,7 @@ export class UsersService {
     const response = await this.prisma.users.findMany({ where: { isActive: true } });
     const data = responseMessageAndData(
       response,
-      'Usuários encontrados com sucesso!',
+      response.length > 0 ? 'Usuários encontrados com sucesso!' : 'Nenhum Usuário cadastrado !',
       'Usuários não cadastrados!',
     );
 
@@ -56,8 +58,10 @@ export class UsersService {
     return data;
   }
 
-  async findOneByCpf(cpf: string) {
-    const response = await this.prisma.users.findUnique({ where: { cpf, isActive: true } });
+  async findOneByCpfOrUsername(data: string) {
+    const response = await this.prisma.users.findFirst({
+      where: { OR: [{ cpf: data }, { username: data }], isActive: true },
+    });
 
     return response;
   }

@@ -5,7 +5,12 @@ import { ConfigModule } from '@nestjs/config';
 import { AuthorizationModule } from './authorization/authorization.module';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthorizationModule],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    AuthorizationModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

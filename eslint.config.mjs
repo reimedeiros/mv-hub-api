@@ -6,22 +6,18 @@ import prettier from 'eslint-plugin-prettier/recommended';
 
 export default tseslint.config(
   {
-    ignores: [
-      'dist',
-      'node_modules',
-      'coverage',
-      '**/*.spec.ts',
-      '**/*.test.ts',
-      'eslint.config.mjs',
-    ],
+    ignores: ['dist', 'node_modules'],
   },
+
+  // Regras recomendadas JS e TS
   eslint.configs.recommended,
-  ...tseslint.configs.recommendedTypeChecked,
+  ...tseslint.configs.recommended,
   prettier,
+
   {
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.json'], // melhor que projectService
+        project: ['./tsconfig.json'],
         tsconfigRootDir: import.meta.dirname,
       },
       globals: {
@@ -32,25 +28,27 @@ export default tseslint.config(
 
   {
     rules: {
-      '@typescript-eslint/no-explicit-any': 'warn',
-      '@typescript-eslint/consistent-type-imports': ['warn', { prefer: 'type-imports' }],
+      // 👍 Regras equilibradas
       '@typescript-eslint/no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
       ],
-      '@typescript-eslint/no-unsafe-argument': 'warn',
-      '@typescript-eslint/no-floating-promises': 'error',
-      '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
 
+      '@typescript-eslint/no-explicit-any': 'off', // Nest usa muito "any"
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+
+      // Melhor DX para Nest
+      '@typescript-eslint/no-inferrable-types': 'off',
+
+      // Erros reais, não chatices
       'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'prefer-const': 'error',
       'no-var': 'error',
+      'prefer-const': 'warn',
 
-      eqeqeq: ['error', 'smart'],
-      curly: ['error', 'all'],
-      'object-shorthand': ['error', 'always'],
-
-      // Prettier
+      // Prettier sempre como última regra
       'prettier/prettier': 'error',
     },
   },

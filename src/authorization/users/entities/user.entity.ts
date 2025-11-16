@@ -7,11 +7,10 @@ import {
   IsInt,
   Min,
   IsEnum,
-  IsNumber,
 } from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
-export class CreateUserDto {
+export class UserEntity {
   @IsString()
   name: string;
 
