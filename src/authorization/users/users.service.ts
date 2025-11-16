@@ -3,15 +3,30 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as CryptoJS from 'crypto-js';
+import { responseMessageAndData } from 'src/services/http-response.util';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
   async create(createUserDto: CreateUserDto) {
-    // TODO criar um findbyemail e ver se já tem o usuário cadastrado e se já existir só mudar o isActive de false para true.
     createUserDto.password = CryptoJS.MD5(createUserDto.password).toString();
-    const response = await this.prisma.users.create({ data: createUserDto });
-    const data = this.responseMessageAndData(
+    createUserDto.isActive = true;
+
+    const hasUser = await this.findOneByCpf(createUserDto.cpf);
+
+    if (hasUser) {
+      return { message: 'Usuário já cadastrado !', data: hasUser };
+    }
+
+    const response = await this.prisma.users.upsert({
+      where: {
+        cpf: createUserDto.cpf,
+      },
+      create: createUserDto,
+      update: createUserDto,
+    });
+
+    const data = responseMessageAndData(
       response,
       'Usuário cadastrado com sucesso!',
       'Usuário não cadastrado!',
@@ -21,7 +36,7 @@ export class UsersService {
 
   async findAll() {
     const response = await this.prisma.users.findMany({ where: { isActive: true } });
-    const data = this.responseMessageAndData(
+    const data = responseMessageAndData(
       response,
       'Usuários encontrados com sucesso!',
       'Usuários não cadastrados!',
@@ -32,7 +47,7 @@ export class UsersService {
 
   async findOne(id: string) {
     const response = await this.prisma.users.findUnique({ where: { id, isActive: true } });
-    const data = this.responseMessageAndData(
+    const data = responseMessageAndData(
       response,
       'Usuário encontrado com sucesso!',
       'Usuário não cadastrado!',
@@ -41,9 +56,15 @@ export class UsersService {
     return data;
   }
 
+  async findOneByCpf(cpf: string) {
+    const response = await this.prisma.users.findUnique({ where: { cpf, isActive: true } });
+
+    return response;
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const response = await this.prisma.users.update({ where: { id }, data: updateUserDto });
-    const data = this.responseMessageAndData(
+    const data = responseMessageAndData(
       response,
       'Usuário atualizado com sucesso!',
       'Usuário não atualizado!',
@@ -53,7 +74,7 @@ export class UsersService {
 
   async remove(id: string) {
     const response = await this.prisma.users.update({ where: { id }, data: { isActive: false } });
-    const data = this.responseMessageAndData(
+    const data = responseMessageAndData(
       response,
       'Usuário deletedo com sucesso!',
       'Usuário não deletado!',
@@ -64,20 +85,12 @@ export class UsersService {
 
   async realRemove(id: string) {
     const response = await this.prisma.users.delete({ where: { id } });
-    const data = this.responseMessageAndData(
+    const data = responseMessageAndData(
       response,
       'Usuário deletedo com sucesso!',
       'Usuário não deletado!',
     );
 
-    return data;
-  }
-
-  responseMessageAndData(responseDB: unknown, successMessage: string, faildMessage: string) {
-    const data = {
-      message: responseDB ? successMessage : faildMessage,
-      data: responseDB ?? undefined,
-    };
     return data;
   }
 }

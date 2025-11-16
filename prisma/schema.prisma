@@ -22,6 +22,7 @@ model Users {
   
   // Perfil
   username             String? @unique
+  cpf                  String @unique
   avatarUrl            String?
   phone                String?
 

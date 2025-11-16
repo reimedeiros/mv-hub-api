@@ -7,6 +7,7 @@ import {
   IsInt,
   Min,
   IsEnum,
+  IsNumber,
 } from 'class-validator';
 import { UserRole } from '../enums/user-role.enum';
 
@@ -23,6 +24,9 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   username?: string;
+
+  @IsString()
+  cpf: string;
 
   @IsOptional()
   @IsString()

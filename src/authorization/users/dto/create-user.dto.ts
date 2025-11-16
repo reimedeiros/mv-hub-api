@@ -24,6 +24,9 @@ export class CreateUserDto {
   @IsString()
   username?: string;
 
+  @IsString()
+  cpf: string;
+
   @IsOptional()
   @IsString()
   avatarUrl?: string;
