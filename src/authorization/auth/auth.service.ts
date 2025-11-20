@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { AuthException } from '../../services/exceptions/auth.exception';
+import { AuthException } from '../../commons/exceptions/auth.exception';
 import * as CryptoJS from 'crypto-js';
 
 @Injectable()

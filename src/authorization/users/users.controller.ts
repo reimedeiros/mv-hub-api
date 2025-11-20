@@ -2,9 +2,9 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { DataException } from '../../services/exceptions/data.exception';
+import { DataException } from '../../commons/exceptions/data.exception';
 import { MailerService } from '../../mailer/mailer.service';
-import { sendMailInterface } from 'src/services/interfaces/sendMail.interface';
+import { sendMailInterface } from 'src/commons/interfaces/sendMail.interface';
 
 @Controller('users')
 export class UsersController {

@@ -15,41 +15,72 @@ datasource db {
 }
 
 model Users {
-  id                   String   @id @default(uuid())
+  id                   String    @id @default(uuid())
   name                 String
-  email                String   @unique
+  email                String    @unique
   password             String
-  
-  // Perfil
-  username             String? @unique
-  cpf                  String @unique
+  username             String?   @unique
+  cpf                  String    @unique
   avatarUrl            String?
   phone                String?
-
-  // Segurança e status
-  isActive             Boolean  @default(true)
-  role                 UserRole @default(USER)
+  isActive             Boolean   @default(true)
+  role                 UserRole  @default(USER)
   lastLogin            DateTime?
-  failedLogins         Int      @default(0)
-
-  // Verificação / recuperação
+  failedLogins         Int       @default(0)
   emailVerified        DateTime?
-  verificationToken    String? @unique
-  resetPasswordToken   String? @unique
+  verificationToken    String?   @unique
+  resetPasswordToken   String?   @unique
   resetPasswordExpires DateTime?
-
-  // Auditoria
   lastIp               String?
   registeredIp         String?
-
-  // Soft delete
   deletedAt            DateTime?
-
-  createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
 }
 
 enum UserRole {
   ADMIN
   USER
+}
+
+model Establishment {
+  id                  Int                         @id @default(autoincrement())
+  cnes                String                      @db.Char(7)
+  cnpj                String                      @db.Char(14)
+  tradeName           String                      @db.VarChar(255)
+  corporateName       String                      @db.VarChar(255)
+  address             String                      @db.VarChar(255)
+  zipCode             String                      @db.Char(8)
+  directorCpf         String                      @db.Char(11)
+  classificationId    Int
+  classification      EstablishmentClassification @relation(fields: [classificationId], references: [id])
+  mainActivityId      String?
+  mainActivity        Activity?                   @relation("MainActivity", fields: [mainActivityId], references: [id])
+  secondaryActivityId String?
+  secondaryActivity   Activity?                   @relation("SecondaryActivity", fields: [secondaryActivityId], references: [id])
+  susSystem           Boolean                     @db.TinyInt
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
+}
+
+// =======================
+// Auxiliary tables
+// =======================
+
+model EstablishmentClassification {
+  id             Int             @id @default(autoincrement())
+  description    String          @db.VarChar(500)
+  establishments Establishment[]
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+}
+
+model Activity {
+  id                      String          @id @db.VarChar(2)
+  activity                String          @db.VarChar(100)
+  description             String          @db.VarChar(3000)
+  mainEstablishments      Establishment[] @relation("MainActivity")
+  secondaryEstablishments Establishment[] @relation("SecondaryActivity")
+  createdAt               DateTime        @default(now())
+  updatedAt               DateTime        @updatedAt
 }

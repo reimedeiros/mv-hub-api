@@ -3,8 +3,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as CryptoJS from 'crypto-js';
-import { responseMessageAndData } from 'src/services/http-response.util';
-import { UserInterface } from '../../services/interfaces/user.interface';
+import { responseMessageAndData } from 'src/commons/http-response.util';
+import { UserInterface } from '../../commons/interfaces/user.interface';
 
 @Injectable()
 export class UsersService {

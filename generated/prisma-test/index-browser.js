@@ -118,12 +118,13 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
+exports.Prisma.UsersScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   password: 'password',
   username: 'username',
+  cpf: 'cpf',
   avatarUrl: 'avatarUrl',
   phone: 'phone',
   isActive: 'isActive',
@@ -137,6 +138,38 @@ exports.Prisma.UserScalarFieldEnum = {
   lastIp: 'lastIp',
   registeredIp: 'registeredIp',
   deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EstablishmentScalarFieldEnum = {
+  id: 'id',
+  cnes: 'cnes',
+  cnpj: 'cnpj',
+  tradeName: 'tradeName',
+  corporateName: 'corporateName',
+  address: 'address',
+  zipCode: 'zipCode',
+  directorCpf: 'directorCpf',
+  classificationId: 'classificationId',
+  mainActivityId: 'mainActivityId',
+  secondaryActivityId: 'secondaryActivityId',
+  susSystem: 'susSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EstablishmentClassificationScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivityScalarFieldEnum = {
+  id: 'id',
+  activity: 'activity',
+  description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -156,7 +189,10 @@ exports.UserRole = exports.$Enums.UserRole = {
 };
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  Users: 'Users',
+  Establishment: 'Establishment',
+  EstablishmentClassification: 'EstablishmentClassification',
+  Activity: 'Activity'
 };
 
 /**

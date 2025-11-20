@@ -1,98 +1,221 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+📘 MV HUB API — SIAP Health Data Integration
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API oficial para envio, gestão e validação de dados do SIAP – Sistema Integrado de Auditoria Pública, com foco no módulo Saúde (2025 – 2ª edição).
+Desenvolvida com Node.js, NestJS e Prisma ORM.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+🚀 Visão Geral
 
-## Description
+Esta API implementa todos os leiautes exigidos pelo SIAP – Módulo Saúde, contemplando:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+✔ Estabelecimentos
+✔ Vínculos Profissionais
+✔ Leitos
+✔ Equipamentos
+✔ Programação Orçamentária
+✔ Solicitações e Autorizações Ambulatoriais
+✔ Autorizações de Internação Hospitalar (AIH)
+✔ Indicadores de Saúde (Mortalidade, Morbidade, Saúde Mental)
+✔ Pré-Natal (Mãe, Nascido Vivo)
+✔ Vacinas – Cobertura Vacinal
+✔ Autenticação JWT completa (login, cadastro, refresh)
 
-## Project setup
+A API foi projetada com arquitetura modular, alta escalabilidade e seguindo padrões REST.
 
-```bash
-$ npm install
-```
+🏗 Arquitetura Geral
+src/
+├── auth/
+│   ├── auth.controller.ts
+│   ├── auth.service.ts
+│   ├── dtos/
+│   └── strategies/
+│
+├── common/
+│   ├── guards/
+│   ├── decorators/
+│   ├── interceptors/
+│   └── filters/
+│
+├── modules/
+│   ├── estabelecimentos/
+│   ├── vinculos-profissionais/
+│   ├── leitos/
+│   ├── equipamentos/
+│   ├── programacao-orcamentaria/
+│   ├── solicitacoes-ambulatoriais/
+│   ├── autorizacoes-ambulatoriais/
+│   ├── aih/
+│   ├── indicadores/
+│   │   ├── mortalidade/
+│   │   ├── morbidade/
+│   │   └── saude-mental/
+│   ├── mae/
+│   ├── nascido-vivo/
+│   └── vacinas/
+│
+├── prisma/
+│   ├── schema.prisma
+│   └── migrations/
+└── main.ts
 
-## Compile and run the project
+⚙ Tecnologias utilizadas
+Tecnologia	Uso
+NestJS	Estrutura principal da aplicação
+Prisma ORM	ORM e migrations
+PostgreSQL	Banco recomendado
+JWT + Passport	Autenticação
+Class Validator / Transformer	Validação de DTOs
+Docker	Deploy e padronização de ambiente
+Swagger	Documentação automática
+🔐 Autenticação (JWT)
 
-```bash
-# development
-$ npm run start
+A API utiliza:
 
-# watch mode
-$ npm run start:dev
+Login
 
-# production mode
-$ npm run start:prod
-```
+Registro
 
-## Run tests
+Tokens de acesso e refresh
 
-```bash
-# unit tests
-$ npm run test
+Refresh automático
 
-# e2e tests
-$ npm run test:e2e
+Rotas protegidas por AuthGuard('jwt')
 
-# test coverage
-$ npm run test:cov
-```
+Endpoints de Auth
+Método	Endpoint
+POST	/auth/register
+POST	/auth/login
+POST	/auth/refresh
+GET	/auth/me
+🧪 Variáveis de Ambiente (.env)
+# Server
+PORT=3000
 
-## Deployment
+# JWT
+JWT_SECRET=super-secret
+JWT_EXPIRES_IN=1h
+JWT_REFRESH_SECRET=refresh-secret
+JWT_REFRESH_EXPIRES_IN=7d
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+# Database
+DATABASE_URL="postgresql://user:password@localhost:5432/siap?schema=public"
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+🛠 Instalação
+1. Instalar dependências
+npm install
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+2. Gerar o client Prisma
+npx prisma generate
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+3. Rodar migrações
+npx prisma migrate dev
 
-## Resources
+4. Subir o servidor
+npm run start:dev
 
-Check out a few resources that may come in handy when working with NestJS:
+🐳 Uso com Docker
+docker compose up --build
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+📚 Documentação dos Módulos (SIAP)
 
-## Support
+A seguir, cada módulo SIAP implementado pela API.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. 🏥 Estabelecimentos de Saúde
+Endpoints
+Método	Rota
+POST	/estabelecimentos
+GET	/estabelecimentos
+GET	/estabelecimentos/:cnes
+PUT	/estabelecimentos/:cnes
+DELETE	/estabelecimentos/:cnes
 
-## Stay in touch
+Campos: CNES, CNPJ, NomeFantasia, RazaoSocial, Endereco, CEP, etc.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. 👩‍⚕️ Vínculo Profissional de Saúde
+Endpoints
+Método	Rota
+POST	/vinculos-profissionais
+GET	/vinculos-profissionais
+GET	/vinculos-profissionais/:cpf/:cnes
+PUT	/vinculos-profissionais/:cpf/:cnes
+DELETE	/vinculos-profissionais/:cpf/:cnes
+3. 🛏 Leitos
+Método	Rota
+POST	/leitos
+GET	/leitos
+GET	/leitos/:cnes/:tipoLeito
+PUT	/leitos/:cnes/:tipoLeito
+DELETE	/leitos/:cnes/:tipoLeito
+4. 🖥 Equipamentos
+Método	Rota
+POST	/equipamentos
+GET	/equipamentos
+GET	/equipamentos/:cnes/:codigo
+PUT	/equipamentos/:cnes/:codigo
+DELETE	/equipamentos/:cnes/:codigo
+5. 💰 Programação Orçamentária
+Método	Rota
+POST	/programacao-orcamentaria
+GET	/programacao-orcamentaria
+GET	/programacao-orcamentaria/:cnes
+DELETE	/programacao-orcamentaria/:id
+6. 📄 Solicitação Ambulatorial
+Método	Rota
+POST	/solicitacoes-ambulatoriais
+GET	/solicitacoes-ambulatoriais
+GET	/solicitacoes-ambulatoriais/:id
+DELETE	/solicitacoes-ambulatoriais/:id
+7. ✔ Autorização Ambulatorial
+Método	Rota
+POST	/autorizacoes-ambulatoriais
+GET	/autorizacoes-ambulatoriais
+GET	/autorizacoes-ambulatoriais/:id
+DELETE	/autorizacoes-ambulatoriais/:id
+8. 🏨 AIH – Autorização de Internação Hospitalar
+Método	Rota
+POST	/aih
+GET	/aih
+GET	/aih/:numeroAIH
+DELETE	/aih/:numeroAIH
+9. 📊 Indicadores – Mortalidade
+Método	Rota
+POST	/indicadores/mortalidade
+GET	/indicadores/mortalidade
+10. 📊 Indicadores – Morbidade
+Método	Rota
+POST	/indicadores/morbidade
+GET	/indicadores/morbidade
+11. 🧠 Indicadores – Saúde Mental
+Método	Rota
+POST	/indicadores/saude-mental
+GET	/indicadores/saude-mental
+12. 🤰 Mãe
+Método	Rota
+POST	/maes
+GET	/maes
+GET	/maes/:cpf
+PUT	/maes/:cpf
+DELETE	/maes/:cpf
+13. 👶 Nascido Vivo
+Método	Rota
+POST	/nascidos-vivos
+GET	/nascidos-vivos
+GET	/nascidos-vivos/:numeroDNV
+DELETE	/nascidos-vivos/:numeroDNV
+14. 💉 Vacinas – Cobertura Vacinal
+Método	Rota
+POST	/vacinas/cobertura
+GET	/vacinas/cobertura
+📑 Documentação Swagger
 
-## License
+Após iniciar o servidor:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+👉 http://localhost:3000/api
+
+🧩 Contribuição
+
+Pull requests são bem-vindos.
+Padronize commits usando Conventional Commits.
+
+📄 Licença
+
+Licenciado sob MIT License.

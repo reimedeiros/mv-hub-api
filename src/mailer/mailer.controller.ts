@@ -1,7 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { MailerService } from './mailer.service';
-import { sendMailInterface } from '../services/interfaces/sendMail.interface';
-import { DataException } from '../services/exceptions/data.exception';
+import { sendMailInterface } from '../commons/interfaces/sendMail.interface';
+import { DataException } from '../commons/exceptions/data.exception';
 
 @Controller('mailer')
 export class MailerController {

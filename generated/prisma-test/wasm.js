@@ -90,12 +90,13 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
   Serializable: 'Serializable'
 });
 
-exports.Prisma.UserScalarFieldEnum = {
+exports.Prisma.UsersScalarFieldEnum = {
   id: 'id',
   name: 'name',
   email: 'email',
   password: 'password',
   username: 'username',
+  cpf: 'cpf',
   avatarUrl: 'avatarUrl',
   phone: 'phone',
   isActive: 'isActive',
@@ -109,6 +110,38 @@ exports.Prisma.UserScalarFieldEnum = {
   lastIp: 'lastIp',
   registeredIp: 'registeredIp',
   deletedAt: 'deletedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EstablishmentScalarFieldEnum = {
+  id: 'id',
+  cnes: 'cnes',
+  cnpj: 'cnpj',
+  tradeName: 'tradeName',
+  corporateName: 'corporateName',
+  address: 'address',
+  zipCode: 'zipCode',
+  directorCpf: 'directorCpf',
+  classificationId: 'classificationId',
+  mainActivityId: 'mainActivityId',
+  secondaryActivityId: 'secondaryActivityId',
+  susSystem: 'susSystem',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.EstablishmentClassificationScalarFieldEnum = {
+  id: 'id',
+  description: 'description',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ActivityScalarFieldEnum = {
+  id: 'id',
+  activity: 'activity',
+  description: 'description',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -128,7 +161,10 @@ exports.UserRole = exports.$Enums.UserRole = {
 };
 
 exports.Prisma.ModelName = {
-  User: 'User'
+  Users: 'Users',
+  Establishment: 'Establishment',
+  EstablishmentClassification: 'EstablishmentClassification',
+  Activity: 'Activity'
 };
 /**
  * Create the Client
@@ -169,6 +205,7 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
+  "postinstall": false,
   "inlineDatasources": {
     "db": {
       "url": {
@@ -177,13 +214,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma-test\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL_TEST\")\n}\n\nmodel User {\n  id       String @id @default(uuid())\n  name     String\n  email    String @unique\n  password String\n\n  // Perfil\n  username  String? @unique\n  avatarUrl String?\n  phone     String?\n\n  // Segurança e status\n  isActive     Boolean   @default(true)\n  role         UserRole  @default(USER)\n  lastLogin    DateTime?\n  failedLogins Int       @default(0)\n\n  // Verificação / recuperação\n  emailVerified        DateTime?\n  verificationToken    String?   @unique\n  resetPasswordToken   String?   @unique\n  resetPasswordExpires DateTime?\n\n  // Auditoria\n  lastIp       String?\n  registeredIp String?\n\n  // Soft delete\n  deletedAt DateTime?\n\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nenum UserRole {\n  ADMIN\n  USER\n}\n",
-  "inlineSchemaHash": "aa09c7e99f27290a08a45e60c935e54f2147251e0e502ee69398c669a22247f7",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"../generated/prisma-test\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL_TEST\")\n}\n\nmodel Users {\n  id                   String    @id @default(uuid())\n  name                 String\n  email                String    @unique\n  password             String\n  username             String?   @unique\n  cpf                  String    @unique\n  avatarUrl            String?\n  phone                String?\n  isActive             Boolean   @default(true)\n  role                 UserRole  @default(USER)\n  lastLogin            DateTime?\n  failedLogins         Int       @default(0)\n  emailVerified        DateTime?\n  verificationToken    String?   @unique\n  resetPasswordToken   String?   @unique\n  resetPasswordExpires DateTime?\n  lastIp               String?\n  registeredIp         String?\n  deletedAt            DateTime?\n  createdAt            DateTime  @default(now())\n  updatedAt            DateTime  @updatedAt\n}\n\nenum UserRole {\n  ADMIN\n  USER\n}\n\n// =======================\n// Establishment table\n// =======================\nmodel Establishment {\n  id                  Int                         @id @default(autoincrement())\n  cnes                String\n  cnpj                String\n  tradeName           String\n  corporateName       String\n  address             String\n  zipCode             String\n  directorCpf         String\n  classificationId    Int\n  classification      EstablishmentClassification @relation(fields: [classificationId], references: [id])\n  mainActivityId      String?\n  mainActivity        Activity?                   @relation(\"MainActivity\", fields: [mainActivityId], references: [id])\n  secondaryActivityId String?\n  secondaryActivity   Activity?                   @relation(\"SecondaryActivity\", fields: [secondaryActivityId], references: [id])\n  susSystem           Boolean\n  createdAt           DateTime                    @default(now())\n  updatedAt           DateTime                    @updatedAt\n}\n\n// =======================\n// Auxiliary tables\n// =======================\n\nmodel EstablishmentClassification {\n  id             Int             @id @default(autoincrement())\n  description    String\n  establishments Establishment[]\n  createdAt      DateTime        @default(now())\n  updatedAt      DateTime        @updatedAt\n}\n\nmodel Activity {\n  id                      String          @id\n  activity                String\n  description             String\n  mainEstablishments      Establishment[] @relation(\"MainActivity\")\n  secondaryEstablishments Establishment[] @relation(\"SecondaryActivity\")\n  createdAt               DateTime        @default(now())\n  updatedAt               DateTime        @updatedAt\n}\n",
+  "inlineSchemaHash": "25837dfc72c59da813f93dd213887c68236a4f934709afc1876dc9266973d7e4",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"User\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"lastLogin\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"failedLogins\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"verificationToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetPasswordToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetPasswordExpires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"lastIp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"registeredIp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"deletedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Users\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"name\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"email\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"password\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"username\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cpf\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"avatarUrl\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"phone\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"isActive\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"role\",\"kind\":\"enum\",\"type\":\"UserRole\"},{\"name\":\"lastLogin\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"failedLogins\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"emailVerified\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"verificationToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetPasswordToken\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"resetPasswordExpires\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"lastIp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"registeredIp\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"deletedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Establishment\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"cnes\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"cnpj\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"tradeName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"corporateName\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"address\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"zipCode\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"directorCpf\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"classificationId\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"classification\",\"kind\":\"object\",\"type\":\"EstablishmentClassification\",\"relationName\":\"EstablishmentToEstablishmentClassification\"},{\"name\":\"mainActivityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"mainActivity\",\"kind\":\"object\",\"type\":\"Activity\",\"relationName\":\"MainActivity\"},{\"name\":\"secondaryActivityId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"secondaryActivity\",\"kind\":\"object\",\"type\":\"Activity\",\"relationName\":\"SecondaryActivity\"},{\"name\":\"susSystem\",\"kind\":\"scalar\",\"type\":\"Boolean\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"EstablishmentClassification\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"establishments\",\"kind\":\"object\",\"type\":\"Establishment\",\"relationName\":\"EstablishmentToEstablishmentClassification\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"Activity\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"activity\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"description\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"mainEstablishments\",\"kind\":\"object\",\"type\":\"Establishment\",\"relationName\":\"MainActivity\"},{\"name\":\"secondaryEstablishments\",\"kind\":\"object\",\"type\":\"Establishment\",\"relationName\":\"SecondaryActivity\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"},{\"name\":\"updatedAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: async () => require('./query_engine_bg.js'),
