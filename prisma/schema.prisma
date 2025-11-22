@@ -45,7 +45,7 @@ enum UserRole {
 
 model Establishment {
   id                  Int                         @id @default(autoincrement())
-  cnes                String                      @db.Char(7)
+  cnes                String                      @unique @db.Char(7)
   cnpj                String                      @db.Char(14)
   tradeName           String                      @db.VarChar(255)
   corporateName       String                      @db.VarChar(255)

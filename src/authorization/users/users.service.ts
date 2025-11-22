@@ -40,7 +40,7 @@ export class UsersService {
     const response = await this.prisma.users.findMany({ where: { isActive: true } });
     const data = responseMessageAndData(
       response,
-      response.length > 0 ? 'Usuários encontrados com sucesso!' : 'Nenhum Usuário cadastrado !',
+      'Usuários encontrados com sucesso!',
       'Usuários não cadastrados!',
     );
 

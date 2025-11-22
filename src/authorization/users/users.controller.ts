@@ -16,7 +16,7 @@ export class UsersController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto) {
     try {
-      const { message, data } = await this.usersService.create(createUserDto);
+      const data = await this.usersService.create(createUserDto);
       // TODO configurar o host de email para fazer isso funcionar.
       // const bodyMailer: sendMailInterface = {
       //   to: createUserDto.email,
@@ -29,7 +29,7 @@ export class UsersController {
       //   `,
       // };
       // await this.mailerService.sendMail(bodyMailer);
-      return { message, data };
+      return data;
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new DataException(error.message);
